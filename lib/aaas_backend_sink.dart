@@ -12,6 +12,7 @@ import 'aaas_backend.dart';
 /// See http://aqueduct.io/docs/http/request_sink
 /// for more details.
 class AaasBackendSink extends RequestSink {
+  ManagedContext context;
   /// Constructor called for each isolate run by an [Application].
   ///
   /// This constructor is called for each isolate an [Application] creates to serve requests.
@@ -22,6 +23,13 @@ class AaasBackendSink extends RequestSink {
     logger.onRecord.listen((rec) => print("$rec ${rec.error ?? ""} ${rec.stackTrace ?? ""}"));
   }
 
+  var dataModel = new ManagedDataModel.fromCurrentMirrorSystem();
+
+  var persistentStore = new PostgreSQLPersistentStore.fromConnectionInfo("username","password","localhost",5432,"aaas_backend_db");
+
+  //THIS CAUSES A FREEZE, NOT SURE YET
+  //context = new ManagedContext(dataModel, persistentStore);
+
   /// All routes must be configured in this method.
   ///
   /// This method is invoked after the constructor and before [willOpen] Routes must be set up in this method, as
@@ -30,11 +38,7 @@ class AaasBackendSink extends RequestSink {
   void setupRouter(Router router) {
     // Prefer to use `pipe` and `generate` instead of `listen`.
     // See: https://aqueduct.io/docs/http/request_controller/
-    router
-      .route("/example")
-      .listen((request) async {
-        return new Response.ok({"key": "value"});
-      });
+    router.route("/users/[:user_id]").generate(() => new UserController());
   }
 
   /// Final initialization method for this instance.
