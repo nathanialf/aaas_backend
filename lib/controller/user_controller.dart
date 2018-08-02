@@ -1,23 +1,27 @@
-import 'package:aaas_backend/aaas_backend.dart';
+import '../aaas_backend.dart';
+import '../model/user.dart';
 
-class UserController extends HTTPController{
-	@httpGet
-	Future<Response> getUsers() async {
-		var userQuery = new Query<User>();
-		List<User> users = await userQuery.fetch();
+class UserController extends HTTPController {
+  @httpGet
+  Future<Response> getAllUsers() async
+  {
+    var userQuery = new Query<User>();
 
-		return new Response.ok(users);
-	}
+    var databaseUsers = await userQuery.fetch();
+    return new Response.ok(databaseUsers);
+  }
 
-	@httpGet
-        Future<Response> getUsers(@HTTPPath("user_id") int id) async {
-                var userQuery = new Query<User>()
-			..where.user_id = whereEqualTo(id);
-                var User user = await userQuery.fetchOne();
+  @httpGet
+  Future<Response> getUserAtIndex(@HTTPPath("index") int index) async {
+    var userQuery = new Query<User>()
+      ..where.user_id = whereEqualTo(index); // `whereEqualTo()` query matchers
 
-		if(user == null)
-			return new Response.notFound();
+    var user = await userQuery.fetchOne();
 
-                return new Response.ok(user);
-        }
+    if (user == null) {
+      return new Response.notFound(body: '<h1>404 Not Found</h1>')
+        ..contentType = ContentType.HTML;
+    }
+    return new Response.ok(user);
+  }
 }

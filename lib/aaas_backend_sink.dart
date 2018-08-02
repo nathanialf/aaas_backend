@@ -1,4 +1,6 @@
 import 'aaas_backend.dart';
+import 'controller/user_controller.dart';
+import 'model/user.dart';
 
 /// This class handles setting up this application.
 ///
@@ -12,7 +14,6 @@ import 'aaas_backend.dart';
 /// See http://aqueduct.io/docs/http/request_sink
 /// for more details.
 class AaasBackendSink extends RequestSink {
-  ManagedContext context;
   /// Constructor called for each isolate run by an [Application].
   ///
   /// This constructor is called for each isolate an [Application] creates to serve requests.
@@ -20,15 +21,20 @@ class AaasBackendSink extends RequestSink {
   ///
   /// Configuration of database connections, [HTTPCodecRepository] and other per-isolate resources should be done in this constructor.
   AaasBackendSink(ApplicationConfiguration appConfig) : super(appConfig) {
-    logger.onRecord.listen((rec) => print("$rec ${rec.error ?? ""} ${rec.stackTrace ?? ""}"));
+    logger.onRecord.listen(
+        (rec) => print("$rec ${rec.error ?? ""} ${rec.stackTrace ?? ""}"));
+
+    AaasBackendConfiguration config = new AaasBackendConfiguration("config.yaml");
+
+    var dataModel = new ManagedDataModel.fromCurrentMirrorSystem();
+
+    var persistentStore = new PostgreSQLPersistentStore.fromConnectionInfo(
+        config.database.username, config.database.password, config.database.host, config.database.port, config.database.databaseName);
+
+    context = new ManagedContext(dataModel, persistentStore);
   }
 
-  var dataModel = new ManagedDataModel.fromCurrentMirrorSystem();
-
-  var persistentStore = new PostgreSQLPersistentStore.fromConnectionInfo("username","password","localhost",5432,"aaas_backend_db");
-
-  //THIS CAUSES A FREEZE, NOT SURE YET
-  //context = new ManagedContext(dataModel, persistentStore);
+  ManagedContext context;
 
   /// All routes must be configured in this method.
   ///
@@ -36,9 +42,15 @@ class AaasBackendSink extends RequestSink {
   /// the router gets 'compiled' after this method completes and routes cannot be added later.
   @override
   void setupRouter(Router router) {
+    router
+        .route('/user/[:index]')
+        .generate(() => new UserController());
+
     // Prefer to use `pipe` and `generate` instead of `listen`.
     // See: https://aqueduct.io/docs/http/request_controller/
-    router.route("/users/[:user_id]").generate(() => new UserController());
+    router.route("/example").listen((request) async {
+      return new Response.ok({"key": "value"});
+    });
   }
 
   /// Final initialization method for this instance.
@@ -47,5 +59,25 @@ class AaasBackendSink extends RequestSink {
   /// initialization process. This method is invoked after [setupRouter] and prior to this
   /// instance receiving any requests.
   @override
-  Future willOpen() async {}
+  Future willOpen() async {
+    await createDatabaseSchema(context);
+  }
+
+  static Future createDatabaseSchema(ManagedContext context) async {
+    var builder = new SchemaBuilder.toSchema(
+      context.persistentStore,
+      new Schema.fromDataModel(context.dataModel),
+      isTemporary: true,
+    );
+
+    for (var cmd in builder.commands) {
+      await context.persistentStore.execute(cmd);
+    }
+  }
+}
+
+class AaasBackendConfiguration extends ConfigurationItem {
+  AaasBackendConfiguration(String fileName) : super.fromFile(fileName);
+
+  DatabaseConnectionConfiguration database;
 }

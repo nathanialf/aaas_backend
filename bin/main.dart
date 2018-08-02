@@ -1,4 +1,4 @@
-import 'package:aaas_backend/aaas_backend.dart';
+import '../lib/aaas_backend.dart';
 import 'dart:io' show Platform;
 
 Future main() async {
