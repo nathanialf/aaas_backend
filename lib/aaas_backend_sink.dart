@@ -1,6 +1,5 @@
 import 'aaas_backend.dart';
 import 'controller/user_controller.dart';
-import 'model/user.dart';
 
 /// This class handles setting up this application.
 ///

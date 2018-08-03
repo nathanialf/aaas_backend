@@ -1,6 +1,0 @@
-database:
-  username: noneya
-  password: business
-  host: host
-  port: 5432
-  databaseName: db

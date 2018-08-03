@@ -24,4 +24,16 @@ class UserController extends HTTPController {
     }
     return new Response.ok(user);
   }
+
+  @httpPost
+  Future<Response> addBook(@HTTPBody() User user) async {
+    var query = new Query<User>()..values = user;
+
+    var insertedUser = await query.insert();
+
+    var insertedUserQuery = new Query<User>()
+      ..where.user_id = whereEqualTo(insertedUser.user_id);
+    
+    return new Response.ok(await insertedUserQuery.fetchOne());
+  }
 }
