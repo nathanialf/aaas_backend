@@ -1,6 +1,6 @@
 import '../aaas_backend.dart';
 
-class User extends ManagedObject<_User> implements _User {}
+class User extends ManagedObject<_User> implements _User, HTTPSerializable {}
 
 class _User {
   @managedPrimaryKey

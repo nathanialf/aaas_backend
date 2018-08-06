@@ -13,6 +13,8 @@ import 'controller/user_controller.dart';
 /// See http://aqueduct.io/docs/http/request_sink
 /// for more details.
 class AaasBackendSink extends RequestSink {
+  ManagedContext context;
+  
   /// Constructor called for each isolate run by an [Application].
   ///
   /// This constructor is called for each isolate an [Application] creates to serve requests.
@@ -33,8 +35,6 @@ class AaasBackendSink extends RequestSink {
     context = new ManagedContext(dataModel, persistentStore);
   }
 
-  ManagedContext context;
-
   /// All routes must be configured in this method.
   ///
   /// This method is invoked after the constructor and before [willOpen] Routes must be set up in this method, as
@@ -43,7 +43,7 @@ class AaasBackendSink extends RequestSink {
   void setupRouter(Router router) {
     router
         .route('/user/[:index]')
-        .generate(() => new UserController());
+        .generate(() => new UserController(context));
 
     // Prefer to use `pipe` and `generate` instead of `listen`.
     // See: https://aqueduct.io/docs/http/request_controller/
@@ -59,14 +59,18 @@ class AaasBackendSink extends RequestSink {
   /// instance receiving any requests.
   @override
   Future willOpen() async {
-    await createDatabaseSchema(context);
+    try{
+      await createDatabaseSchema(context);
+    } catch(e){
+      
+    }
   }
 
   static Future createDatabaseSchema(ManagedContext context) async {
     var builder = new SchemaBuilder.toSchema(
       context.persistentStore,
       new Schema.fromDataModel(context.dataModel),
-      isTemporary: true,
+      isTemporary: false,
     );
 
     for (var cmd in builder.commands) {
