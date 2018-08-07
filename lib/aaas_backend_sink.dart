@@ -62,15 +62,17 @@ class AaasBackendSink extends RequestSink {
     try{
       await createDatabaseSchema(context);
     } catch(e){
-      
+      print("DB Already Exists");
     }
   }
 
+  // Creates the DB Schema
+  // isTemporary decides if it persists
   static Future createDatabaseSchema(ManagedContext context) async {
     var builder = new SchemaBuilder.toSchema(
       context.persistentStore,
       new Schema.fromDataModel(context.dataModel),
-      isTemporary: false,
+      isTemporary: true,
     );
 
     for (var cmd in builder.commands) {
@@ -79,6 +81,7 @@ class AaasBackendSink extends RequestSink {
   }
 }
 
+// Reads from config.yaml so we can hide passwords and such in a file that is not in github
 class AaasBackendConfiguration extends ConfigurationItem {
   AaasBackendConfiguration(String fileName) : super.fromFile(fileName);
 

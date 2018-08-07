@@ -6,6 +6,7 @@ Future main() async {
       ..configuration.configurationFilePath = "config.yaml"
       ..configuration.port = 8000;
 
+  // Runs on all processors
   await app.start(numberOfInstances: Platform.numberOfProcessors);
 
   print("Application started on port: ${app.configuration.port}.");
