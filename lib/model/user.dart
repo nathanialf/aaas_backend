@@ -1,14 +1,14 @@
 import '../aaas_backend.dart';
 
-class User extends ManagedObject<_User> implements _User, HTTPSerializable {}
+class User extends ManagedObject<_User> implements _User {}
 
 class _User {
   // Primary Key
-  @managedPrimaryKey
+  @primaryKey
   int id;
 
   // Unique Column
-  @ManagedColumnAttributes(unique: true)
+  @Column(unique: true)
   String email;
 
   // Other Columns

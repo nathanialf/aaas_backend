@@ -1,14 +1,12 @@
-import '../lib/aaas_backend.dart';
-import 'dart:io' show Platform;
+import 'package:aaas_backend/aaas_backend.dart';
 
 Future main() async {
-  var app = new Application<AaasBackendSink>()
-      ..configuration.configurationFilePath = "config.yaml"
-      ..configuration.port = 8000;
+  final app = Application<AaasBackendChannel>()
+      ..options.configurationFilePath = "config.yaml"
+      ..options.port = 8888;
 
-  // Runs on all processors
   await app.start(numberOfInstances: Platform.numberOfProcessors);
 
-  print("Application started on port: ${app.configuration.port}.");
+  print("Application started on port: ${app.options.port}.");
   print("Use Ctrl-C (SIGINT) to stop running the application.");
 }
