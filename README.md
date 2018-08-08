@@ -1,5 +1,7 @@
 # aaas_backend
 
+API-as-a-Service Backend to serve the API for https://github.com/nathanialf/aaas_frontend/
+
 ## Running the Application Locally
 
 Run `aqueduct serve` from this directory to run the application. For running within an IDE, run `bin/main.dart`. By default, a configuration file named `config.yaml` will be used.
