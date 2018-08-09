@@ -24,8 +24,7 @@ class UserController extends ResourceController {
     final user = await userQuery.fetchOne();
 
     if (user == null) {
-      return Response.notFound(body: '<h1>404 Not Found</h1>')
-        ..contentType = ContentType.HTML;
+      return Response.notFound(body: '<h1>404 Not Found</h1>');
     }
     return Response.ok(user);
   }

@@ -18,10 +18,11 @@ class AaasBackendChannel extends ApplicationChannel {
   }
 
   static AaasBackendConfiguration config = AaasBackendConfiguration("config.yaml");
-  static var dataModel = ManagedDataModel.fromCurrentMirrorSystem();
-
-  static var persistentStore = PostgreSQLPersistentStore.fromConnectionInfo(
-      config.database.username, config.database.password, config.database.host, config.database.port, config.database.databaseName);
+  static ManagedDataModel dataModel = ManagedDataModel.fromCurrentMirrorSystem();
+  static DatabaseConfiguration database = config.aaasBackendDev;
+  
+  static PostgreSQLPersistentStore persistentStore = PostgreSQLPersistentStore.fromConnectionInfo(
+      database.username, database.password, database.host, database.port, database.databaseName);
 
   ManagedContext context = ManagedContext(dataModel, persistentStore);
   /// Construct the request channel.
@@ -36,7 +37,7 @@ class AaasBackendChannel extends ApplicationChannel {
 
     router
         .route('/user[/:index]')
-        .link(() => new UserController(context));
+        .link(() => UserController(context));
 
     // Prefer to use `link` instead of `linkFunction`.
     // See: https://aqueduct.io/docs/http/request_controller/
@@ -54,5 +55,8 @@ class AaasBackendChannel extends ApplicationChannel {
 class AaasBackendConfiguration extends Configuration {
   AaasBackendConfiguration(String fileName) : super.fromFile(File(fileName));
 
-  DatabaseConfiguration database;
+  DatabaseConfiguration aaasBackendProd;
+  DatabaseConfiguration aaasBackendDev;
+
+  String dbEnvironment;
 }
