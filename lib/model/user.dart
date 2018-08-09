@@ -15,6 +15,7 @@ class _User {
   String fname;
   String lname;
   String pass; //NEEDS ENCRYPTED
+  String theme;
   DateTime created;
   int active;
 }

@@ -1,4 +1,5 @@
 import 'aaas_backend.dart';
+import 'controller/project_controller.dart';
 import 'controller/user_controller.dart';
 
 /// This type initializes an application.
@@ -6,6 +7,17 @@ import 'controller/user_controller.dart';
 /// Override methods in this class to set up routes and initialize services like
 /// database connections. See http://aqueduct.io/docs/http/channel/.
 class AaasBackendChannel extends ApplicationChannel {
+
+  static AaasBackendConfiguration config = AaasBackendConfiguration("config.yaml");
+  static ManagedDataModel dataModel = ManagedDataModel.fromCurrentMirrorSystem();
+
+  static DatabaseConfiguration database = config.aaasBackendDev;
+  
+  static PostgreSQLPersistentStore persistentStore = PostgreSQLPersistentStore.fromConnectionInfo(
+      database.username, database.password, database.host, database.port, database.databaseName);
+
+  ManagedContext context = ManagedContext(dataModel, persistentStore);
+
   /// Initialize services in this method.
   ///
   /// Implement this method to initialize services, read values from [options]
@@ -15,16 +27,9 @@ class AaasBackendChannel extends ApplicationChannel {
   @override
   Future prepare() async {
     logger.onRecord.listen((rec) => print("$rec ${rec.error ?? ""} ${rec.stackTrace ?? ""}"));
+
+    await createDatabaseSchema(context, config.isTemporary);
   }
-
-  static AaasBackendConfiguration config = AaasBackendConfiguration("config.yaml");
-  static ManagedDataModel dataModel = ManagedDataModel.fromCurrentMirrorSystem();
-  static DatabaseConfiguration database = config.aaasBackendDev;
-  
-  static PostgreSQLPersistentStore persistentStore = PostgreSQLPersistentStore.fromConnectionInfo(
-      database.username, database.password, database.host, database.port, database.databaseName);
-
-  ManagedContext context = ManagedContext(dataModel, persistentStore);
   /// Construct the request channel.
   ///
   /// Return an instance of some [Controller] that will be the initial receiver
@@ -38,6 +43,9 @@ class AaasBackendChannel extends ApplicationChannel {
     router
         .route('/user[/:index]')
         .link(() => UserController(context));
+    router
+        .route('/project[/:code]')
+        .link(() => ProjectController(context));
 
     // Prefer to use `link` instead of `linkFunction`.
     // See: https://aqueduct.io/docs/http/request_controller/
@@ -49,6 +57,20 @@ class AaasBackendChannel extends ApplicationChannel {
 
     return router;
   }
+
+  Future createDatabaseSchema(ManagedContext context, bool isTemporary) async {
+    try {
+      final builder = SchemaBuilder.toSchema(
+        context.persistentStore, Schema.fromDataModel(context.dataModel),
+        isTemporary: isTemporary);
+
+      for (var cmd in builder.commands) {
+        await context.persistentStore.execute(cmd);
+      }
+    } catch (e) {
+     // Database may already exist
+    }
+  }
 }
 
 // Reads from config.yaml so we can hide passwords and such in a file that is not in github
@@ -59,4 +81,5 @@ class AaasBackendConfiguration extends Configuration {
   DatabaseConfiguration aaasBackendDev;
 
   String dbEnvironment;
+  bool isTemporary;
 }

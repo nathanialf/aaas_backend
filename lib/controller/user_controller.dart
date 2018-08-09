@@ -28,22 +28,24 @@ class UserController extends ResourceController {
     }
     return Response.ok(user);
   }
-  /*
+  
   // Returns single user from login
-  @Operation.get()
-  Future<Response> getUserForLogin(@Bind.path("email") String email, @Bind.path("pass") String pass) async {
-    var userQuery = new Query<User>(context)
-      ..where.email = whereEqualTo(email)..where.pass = whereEqualTo(pass); // `whereEqualTo()` query matchers
+  @Operation.get("email", "pass")
+  Future<Response> getUserForLogin() async {
+    final email = request.path.variables['email'];
+    final pass = request.path.variables['pass'];
 
-    var user = await userQuery.fetchOne();
+    final userQuery = Query<User>(context)
+      ..where((u) => u.email).equalTo(email)
+      ..where((u) => u.pass).equalTo(pass);
+
+    final user = userQuery.fetchOne();
 
     if (user == null) {
-      return new Response.notFound(body: '<h1>404 Not Found</h1>')
-        ..contentType = ContentType.HTML;
+      return Response.notFound(body: '<h1>404 Not Found</h1>');
     }
-    return new Response.ok(user);
+    return Response.ok(user);
   }
-  */
 
   // adds user to db
   // returns created user
@@ -51,6 +53,7 @@ class UserController extends ResourceController {
   Future<Response> addUser(@Bind.body() User user) async {
     // datetime created here
     user.created = DateTime.now();
+    user.theme = "peach.css";
     final query = Query<User>(context)..values = user;
 
     final insertedUser = await query.insert();
