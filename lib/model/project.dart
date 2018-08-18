@@ -1,4 +1,5 @@
 import '../aaas_backend.dart';
+import './database.dart';
 
 class Project extends ManagedObject<_Project> implements _Project {}
 
@@ -14,4 +15,6 @@ class _Project {
   // Other Columns
   String name;
   int active;
+
+  ManagedSet<Database> databases;
 }

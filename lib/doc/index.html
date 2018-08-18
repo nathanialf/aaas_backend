@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<head>
+<title>AAAS Documentation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#333" />
+
+<!-- Download Bootstrap -->
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+<style>
+    body{
+        --peach-dark:				#FC6262;
+	    --peach-light:				#FFD86F;
+	    --peach-gradient:			linear-gradient(40deg, var(--peach-light), var(--peach-dark));
+	    --peach-gradient-inverted:	linear-gradient(40deg, var(--peach-dark), var(--peach-light));
+    }
+
+    /*CLASSES*/
+    .aaas_navbar{
+        padding:					8px 0px;
+        background: 				var(--peach-gradient-inverted);
+	    color:						white;
+    }
+
+    .aaas_navbar > span{
+	    font-size:					1.5em;
+    }
+
+    .aaas_tab_container{
+	    margin:						.5em;
+    }
+
+    .aaas_tab{
+	    display:	 				inline-block;
+	    padding:					8px 12px;
+	    border-width:				2px;
+	    border-style:				solid;
+        border-radius:				4px;
+        border-color:				var(--peach-dark);
+	    background:					none;
+	    color:						var(--peach-dark);
+    }
+
+    .aaas_tab:hover{
+        cursor:						pointer;
+        background:					var(--peach-dark);
+	    color:						white;
+    }
+
+    .aaas_datatable tr:nth-child(even){
+    	background:					lightblue;		
+    }
+
+    .aaas_datatable{
+	    width:						100%;
+    }
+
+    .aaas_datatable_container{
+	    border-radius: 				4px;
+	    border-style:				solid;
+	    border-width: 				1px;
+	    border-color:				lightgray;
+    }  
+
+    .aaas_datatable td, .aaas_datatable th {
+    	padding:					5px;
+    }
+
+    .aaas_tablecell_active{
+	    color:						green;
+	    background-color: 			#6dffa0;
+	    text-align:					center;
+    }
+
+    .aaas_tablecell_inactive{
+	    color:						red;
+	    background-color: 			#ff6d6d;
+	    text-align:					center;
+    }
+
+    /*UI ELEMENTS*/
+    button{
+	    border-style: 				none;
+	    border-radius:				100px;
+        padding:					8px 12px;
+        background:					var(--peach-gradient-inverted);
+	    color:						white;
+    }
+
+    input{
+	    border-style:				none none solid none;
+        border-width:				2px;
+        border-color:				var(--peach-dark);
+    }
+</style>
+
+<body class="main">
+	<div class="aaas_navbar">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span>API-as-a-Service Documentation</span>
+    </div>
+    <!--<div class="aaas_tab_container">
+        <div class="aaas_tab" onclick="window.open('#/users', '_self');">Users</div>
+        <div class="aaas_tab" onclick="window.open('#/projects', '_self');">Projects</div>
+    </div>-->
+    <div class="container">
+        <h3>Users</h3>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Method</th>
+                    <th scope="col">URI</th>
+                    <th scope="col">Returns</th>
+                    <th scope="col">Description</th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>GET
+                    <td>/user
+                    <td>Array
+                    <td>Returns an array of all users
+                <tr>
+                    <td>GET
+                    <td>/user/&lt;User ID&gt;
+                    <td>User
+                    <td>Returns a user of the specified ID
+                <tr>
+                    <td>POST
+                    <td>/user
+                    <td>User
+                    <td>Request:<br>
+                        <code>
+                            data:   {<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;email: email@test.com,<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;fname: First name,<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;lname: Last name,<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;pass: passw0rd,<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;active: 1<br>
+                        }</code><br>
+                        Returns the created User
+            </tbody>
+        </table>
+    </div>
+    <div class="container">
+        <h3>Projects</h3>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Method</th>
+                    <th scope="col">URI</th>
+                    <th scope="col">Returns</th>
+                    <th scope="col">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>GET
+                    <td>/project
+                    <td>Array
+                    <td>Returns an array of all projects
+                <tr>
+                    <td>GET
+                    <td>/project/&lt;Project Code&gt;
+                    <td>Project
+                    <td>Returns a project of the specified code
+                <tr>
+                    <td>POST
+                    <td>/project
+                    <td>Project
+                    <td>Request:<br>
+                        <code>
+                        data:   {<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;name: project name,<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;code: PRJCD,<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;active: 1<br>
+                        }</code><br>
+                        Returns the created Project
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

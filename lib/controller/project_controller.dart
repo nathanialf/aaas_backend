@@ -1,5 +1,6 @@
 import '../aaas_backend.dart';
 import '../model/project.dart';
+import '../model/database.dart';
 
 class ProjectController extends ResourceController {
   ProjectController(this.context);
@@ -26,20 +27,23 @@ class ProjectController extends ResourceController {
     if (user == null) {
       return Response.notFound(body: '<h1>404 Not Found</h1>');
     }
+
     return Response.ok(user);
   }
 
-  // adds user to db
-  // returns created user
+  // adds project to db
+  // returns created project
   @Operation.post()
-  Future<Response> addUser(@Bind.body() Project project) async {
-    // datetime created here
+  Future<Response> addProject(@Bind.body() Project project) async {
+    project.databases = ManagedSet<Database>();
+    
     final query = Query<Project>(context)..values = project;
 
     final insertedProject = await query.insert();
 
     final checkInsertedQuery = Query<Project>(context)
       ..where((p) => p.id).equalTo(insertedProject.id);
+      
     return Response.ok(await checkInsertedQuery.fetchOne());
   }
 }

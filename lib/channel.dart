@@ -47,12 +47,14 @@ class AaasBackendChannel extends ApplicationChannel {
         .route('/project[/:code]')
         .link(() => ProjectController(context));
 
-    // Prefer to use `link` instead of `linkFunction`.
-    // See: https://aqueduct.io/docs/http/request_controller/
+    final documentation = File("lib/doc/index.html").readAsStringSync();
+
+    // has documentation on the main page
     router
-      .route("/example")
+      .route("/")
       .linkFunction((request) async {
-        return Response.ok({"key": "value"});
+        return Response.ok(documentation)
+          ..contentType = ContentType.html;
       });
 
     return router;
